@@ -25,6 +25,9 @@ app.get('/api/coffees/:id', (req, res) => {
 });
 
 app.post('/api/coffees', (req, res) => {
+    if(!req.body.name || req.body.name.length < 3) {
+        res.status(400).send('Name is required and should be a minimum 3 characters');
+    }
     const COFFEE = {
         id: COFFEES.length + 1,
         name: req.body.name
