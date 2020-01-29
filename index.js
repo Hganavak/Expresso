@@ -1,3 +1,4 @@
+const Joi = require('joi');
 const express = require('express');
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -19,21 +20,29 @@ app.get('/api/coffees', (req, res) => {
 });
 
 app.get('/api/coffees/:id', (req, res) => {
-    const COFFEE = COFFEES.find(c => c.id === parseInt(req.params.id));
-    if(!COFFEE) res.status(404).send('A coffee with the given ID was not found.');
-    res.send(COFFEE);
+    const coffee = COFFEES.find(c => c.id === parseInt(req.params.id));
+    if(!coffee) res.status(404).send('A coffee with the given ID was not found.');
+    res.send(coffee);
 });
 
 app.post('/api/coffees', (req, res) => {
-    if(!req.body.name || req.body.name.length < 3) {
-        res.status(400).send('Name is required and should be a minimum 3 characters');
+
+    const schema = {
+        name: Joi.string().min(3).required()
+    };
+
+    const result = Joi.validate(req.body, schema);
+    console.log(result);
+
+    if(result.error) {
+        res.status(400).send(result.error.details[0].message);
     }
-    const COFFEE = {
+    const coffee = {
         id: COFFEES.length + 1,
         name: req.body.name
     };
-    COFFEES.push(COFFEE);
-    res.send(COFFEE);
+    COFFEES.push(coffee);
+    res.send(coffee);
 });
 
 
