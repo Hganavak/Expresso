@@ -2,6 +2,8 @@ const express = require('express');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+app.use(express.json());
+
 const COFFEES = [
     { id: 1, name: 'Colombian' },
     { id: 2, name: 'Italian' },
@@ -19,6 +21,15 @@ app.get('/api/coffees', (req, res) => {
 app.get('/api/coffees/:id', (req, res) => {
     const COFFEE = COFFEES.find(c => c.id === parseInt(req.params.id));
     if(!COFFEE) res.status(404).send('A coffee with the given ID was not found.');
+    res.send(COFFEE);
+});
+
+app.post('/api/coffees', (req, res) => {
+    const COFFEE = {
+        id: COFFEES.length + 1,
+        name: req.body.name
+    };
+    COFFEES.push(COFFEE);
     res.send(COFFEE);
 });
 
