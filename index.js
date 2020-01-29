@@ -27,41 +27,29 @@ app.get('/api/coffees/:id', (req, res) => {
 
 app.post('/api/coffees', (req, res) => {
 
-    const schema = {
-        name: Joi.string().min(3).required()
-    };
-
-    const result = Joi.validate(req.body, schema);
-    console.log(result);
-
-    if(result.error) {
-        res.status(400).send(result.error.details[0].message);
-        return;
-    }
+    const { error } = validateCoffee(req.body); // Destructured
+    if (error)
+        return res.status(400).send(error.details[0].message);
 
     const coffee = {
         id: COFFEES.length + 1,
         name: req.body.name
     };
+
     COFFEES.push(coffee);
     res.send(coffee);
 });
 
+/**
+ * Update an existing coffee's name
+ */
 app.put('/api/coffees/:id', (req, res) => {
     const coffee = COFFEES.find(c => c.id === parseInt(req.params.id));
     if(!coffee) res.status(404).send('A coffee with the given ID was not found.');
 
-    const schema = {
-        name: Joi.string().min(3).required()
-    };
-
-    const result = Joi.validate(req.body, schema);
-    console.log(result);
-
-    if(result.error) {
-        res.status(400).send(result.error.details[0].message);
-        return;
-    }
+    const { error } = validateCoffee(req.body); // Destructured
+    if(error) 
+        return res.status(400).send(error.details[0].message);
 
     coffee.name = req.body.name;
     res.send(coffee);
@@ -70,5 +58,15 @@ app.put('/api/coffees/:id', (req, res) => {
 
     
 });
+
+
+function validateCoffee(coffee) {
+    const schema = {
+        name: Joi.string().min(3).required()
+    };
+
+    return Joi.validate(coffee, schema);
+}
+
 
 app.listen(PORT, () => console.log(`Listening on port ${PORT}`));
