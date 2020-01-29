@@ -53,11 +53,20 @@ app.put('/api/coffees/:id', (req, res) => {
 
     coffee.name = req.body.name;
     res.send(coffee);
-
-
-
-    
 });
+
+
+app.delete('/api/coffees/:id', (req, res) => {
+    const coffee = COFFEES.find(c => c.id === parseInt(req.params.id));
+    if(!coffee) res.status(404).send('A coffee with the given ID was not found.');
+
+    // Delete
+    const index = COFFEES.indexOf(coffee);
+    COFFEES.splice(index);
+    
+    res.send(coffee);
+});
+
 
 
 function validateCoffee(coffee) {
